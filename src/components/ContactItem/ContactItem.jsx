@@ -1,19 +1,24 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { useDeleteContactsMutation } from "../../redux/operations";
+import { useDispatch } from "react-redux";
+import { deleteContact } from "../../redux/operations";
 
 export default function ContactItem({ name, number, id }) {
-  const [deleteContacts, { isLoading: isDeleting }] =
-    useDeleteContactsMutation();
+  const dispatch = useDispatch();
+  const handleDelete = (id) => {
+    dispatch(deleteContact(id));
+    console.log("delete");
+  };
+
   return (
     <li className="ContactItem">
       <p className="ContactItem__text">{name}</p>
       <p className="ContactItem__text">{number}</p>
       <button
         className="ContactListItem__button"
-        onClick={() => deleteContacts(id)}
+        onClick={() => handleDelete(id)}
       >
-        {isDeleting ? "Deleting..." : "Delete"}
+        Delete
       </button>
     </li>
   );

@@ -1,0 +1,66 @@
+@import "styles/shared.scss";
+.AppBar {
+  display: flex;
+  border: 1px solid black;
+  justify-content: space-around;
+  align-items: center;
+  padding: 15px;
+}
+
+.navigation {
+  display: flex;
+  justify-content: space-between;
+}
+
+.navigationAuth {
+  width: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.userDetails {
+  display: flex;
+  align-items: center;
+}
+
+.LogoutBtn {
+  @extend %button;
+  margin-left: 30px;
+  border-radius: 4px;
+  padding: 12px 24px;
+  background-color: $indigo;
+  color: $white;
+  font-weight: 500;
+
+  &:hover,
+  &:focus {
+    background-color: $indigo-accent;
+  }
+
+  &:active {
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.navLink {
+  border-radius: 4px;
+  padding: 12px 24px;
+  background-color: $green;
+  color: $white;
+  font-weight: 500;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    background-color: $green-accent;
+  }
+
+  &:active {
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.Login {
+  margin-right: 40px;
+}

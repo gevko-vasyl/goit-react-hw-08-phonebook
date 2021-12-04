@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import { useAddContactsMutation } from "../../redux/operations";
+import { useSelector, useDispatch } from "react-redux";
+import { addContact } from "../../redux/operations";
+import { getContacts } from "../../redux/selectors";
 import "./ContactForm.scss";
 
-export default function ContactForm({ contactsApi }) {
-  const [addContacts] = useAddContactsMutation();
+export default function ContactForm() {
+  const contacts = useSelector((state) => getContacts(state));
+  const dispatch = useDispatch();
 
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
@@ -20,27 +23,28 @@ export default function ContactForm({ contactsApi }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const repeatName = contactsApi.reduce(
-      (acc, contact) => [...acc, contact.name],
-      []
-    );
-    const repeatNumber = contactsApi.reduce(
-      (acc, contact) => [...acc, contact.number],
-      []
-    );
+    if (contacts) {
+      const repeatName = contacts.reduce(
+        (acc, contact) => [...acc, contact.name],
+        []
+      );
+      const repeatNumber = contacts.reduce(
+        (acc, contact) => [...acc, contact.number],
+        []
+      );
+      if (repeatName.includes(name) || repeatNumber.includes(number)) {
+        alert(`${name} ${number} is already created`);
+        return;
+      }
 
-    if (repeatName.includes(name) || repeatNumber.includes(number)) {
-      alert(`${name} ${number} is already created`);
-      return;
-    }
-
-    if (name === "" || number === "") {
-      alert(`Enter data`);
-      return;
+      if (name === "" || number === "") {
+        alert(`Enter data`);
+        return;
+      }
     }
 
     const newContact = { name, number };
-    addContacts(newContact);
+    dispatch(addContact(newContact));
     setName("");
     setNumber("");
   };

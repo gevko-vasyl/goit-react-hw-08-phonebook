@@ -1,65 +1,36 @@
-import { setupListeners } from "@reduxjs/toolkit/dist/query";
-import { configureStore } from "@reduxjs/toolkit";
-
+import contactReducer from "../redux/reducer";
+import auth from "./auth/authSlices";
+import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
 import {
-  FLUSH,
-  REHYDRATE,
-  PAUSE,
-  PERSIST,
-  PURGE,
-  REGISTER,
+  persistStore,
+  persistReducer,
+  // FLUSH,
+  // REHYDRATE,
+  // PAUSE,
+  // PERSIST,
+  // PURGE,
+  // REGISTER,
 } from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
-import { contactsApi } from "./operations";
-import filter from "./reducer";
+const middleware = [
+  ...getDefaultMiddleware({
+    serializableCheck: false,
+  }),
+];
+
+const persistConfig = {
+  key: "auth",
+  storage,
+  whitelist: ["token"],
+};
+
+const persistedReducer = persistReducer(persistConfig, auth);
 
 export const store = configureStore({
-  reducer: {
-    [contactsApi.reducerPath]: contactsApi.reducer,
-    getFilter: filter,
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },
-    }).concat(contactsApi.middleware),
-  devTools: process.env.NODE_ENV !== "production",
+  reducer: { auth: persistedReducer, contacts: contactReducer },
+  middleware,
+  devTools: process.env.NODE_ENV === "development",
 });
 
-setupListeners(store.dispatch);
-
-// import { configureStore } from "@reduxjs/toolkit";
-// import logger from "redux-logger";
-// import {
-//   persistStore,
-//   persistReducer,
-//   FLUSH,
-//   REHYDRATE,
-//   PAUSE,
-//   PERSIST,
-//   PURGE,
-//   REGISTER,
-// } from "redux-persist";
-// import storage from "redux-persist/lib/storage";
-// import { phonebookReducer } from "./reducer";
-
-// const phonebookPersistConfig = {
-//   key: "contact",
-//   storage,
-//   blacklist: ["filter"],
-// };
-// const persisteReducer = persistReducer(
-//   phonebookPersistConfig,
-//   phonebookReducer
-// );
-// export const store = configureStore({
-//   reducer: persisteReducer,
-//   middleware: (getDefaultMiddleware) =>
-//     getDefaultMiddleware({
-//       serializableCheck: {
-//         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-//       },
-//     }).concat(logger),
-// });
-// export const persistor = persistStore(store);
+export const persistor = persistStore(store);

@@ -1,27 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { getFilter } from "../../redux/selectors";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { normalizedContact } from "../../redux/selectors";
+import { fetchContacts } from "../../redux/operations";
 import ContactItem from "../ContactItem/ContactItem";
 
 import "./ContactList.scss";
 
-export default function ContactList({ contactsApi }) {
-  const value = useSelector(getFilter);
-  console.log(value);
-  const [contacts, setContacts] = useState([]);
-  useEffect(() => {
-    const optimizedFilter = value.toLowerCase();
-    try {
-      setContacts(
-        contactsApi.filter(({ name }) =>
-          name.toLowerCase().includes(optimizedFilter)
-        )
-      );
-    } catch (error) {
-      return error;
-    }
-  }, [contactsApi, value]);
+export default function ContactList() {
+  const dispatch = useDispatch();
+  const contacts = useSelector((state) => normalizedContact(state));
 
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
+
+  if (contacts.length === 0) {
+    return <h2 className="ContactListTitle">Your contact list is empty</h2>;
+  }
   return (
     <>
       <ul className="ContactList">

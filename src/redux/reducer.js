@@ -1,52 +1,51 @@
 import { combineReducers } from "redux";
 import { createReducer } from "@reduxjs/toolkit";
-import { changeFilter } from "./actions";
+import * as actions from "./actions";
+import { fetchContacts, addContact, deleteContact } from "./operations";
+import { addUser } from "./auth/authOperations";
+
+const initState = {
+  contactsList: [],
+  filter: "",
+  isLoading: false,
+};
+
+const contactList = createReducer(initState.contactsList, {
+  [fetchContacts.fulfilled]: (state, action) => {
+    return action.payload;
+  },
+  [addContact.fulfilled]: (state, action) => {
+    return [...state, action.payload.data];
+  },
+
+  [deleteContact.fulfilled]: (state, action) => {
+    console.log(action.payload);
+    const newState = state.filter((contact) => contact.id !== action.payload);
+    return newState;
+  },
+});
 
 const filter = createReducer("", {
-  [changeFilter]: (_, { payload }) => payload,
+  [actions.filter]: (_, action) => action.payload,
+});
+
+const loading = createReducer(false, {
+  [addContact.fulfilled]: () => false,
+  [addContact.rejected]: () => false,
+  [addContact.pending]: () => true,
+  [deleteContact.fulfilled]: () => false,
+  [deleteContact.rejected]: () => false,
+  [deleteContact.pending]: () => true,
+  [fetchContacts.fulfilled]: () => false,
+  [fetchContacts.rejected]: () => false,
+  [fetchContacts.pending]: () => true,
+  [addUser.fulfilled]: () => false,
+  [addUser.rejected]: () => false,
+  [addUser.pending]: () => true,
 });
 
 export default combineReducers({
-  filter,
+  contacts: contactList,
+  filter: filter,
+  loading: loading,
 });
-
-// import { combineReducers } from "redux";
-// import { createReducer } from "@reduxjs/toolkit";
-
-// const initState = [
-//   {
-//     id: "id-1",
-//     name: "Rosie Simpson",
-//     number: "459-12-56",
-//   },
-//   {
-//     id: "id-2",
-//     name: "Hermione Kline",
-//     number: "443-89-12",
-//   },
-//   {
-//     id: "id-3",
-//     name: "Eden Clements",
-//     number: "645-17-79",
-//   },
-//   {
-//     id: "id-4",
-//     name: "Annie Copeland",
-//     number: "227-91-26",
-//   },
-// ];
-
-// const contactList = createReducer(initState, {
-//   "contacts/add": (state, { payload }) => [...state, payload],
-//   "contacts/delete": (state, { payload }) =>
-//     state.filter(({ id }) => id !== payload),
-// });
-
-// const filter = createReducer("", {
-//   "filter/value": (state, { payload }) => payload,
-// });
-
-// export const phonebookReducer = combineReducers({
-//   contact: contactList,
-//   filter,
-// });

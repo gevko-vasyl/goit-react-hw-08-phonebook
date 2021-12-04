@@ -1,23 +1,26 @@
-import React from "react";
-import { changeFilter } from "../../redux/actions";
-import { useDispatch, useSelector } from "react-redux";
-import { getFilter } from "../../redux/selectors";
+import { useSelector, useDispatch } from "react-redux";
+import * as actions from "../../redux/actions";
 import "./Filter.scss";
 
-export default function Filter() {
+function Filter() {
+  const filter = useSelector((state) => state.filter);
   const dispatch = useDispatch();
-  const value = useSelector(getFilter);
-  const onChange = (event) => dispatch(changeFilter(event.target.value));
+  const handleChange = (e) => {
+    dispatch(actions.filter(e.target.value));
+  };
   return (
-    <div className="Filter ">
-      <h2 className="Filter__contacts-title">Contacts</h2>
-      <h3 className="Filter__title">Find contacts by name</h3>
+    <label>
+      <p className="Filter__title">Filter</p>
       <input
         className="Filter__input"
         type="text"
-        value={value}
-        onChange={onChange}
-      />
-    </div>
+        name="filter"
+        value={filter}
+        onChange={handleChange}
+        placeholder="Find contacts by name"
+      ></input>
+    </label>
   );
 }
+
+export default Filter;
